@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    ports:
+      - "8000:80"   # Laravel web access
+      - "2222:22"   # SSH access
+    volumes:
+      - ./laravel:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini
+    working_dir: /var/www/html
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    ports:
+      - "22397:3306"  # Maps host port 22397 to container's MySQL port
+    environment:
+      MYSQL_ROOT_PASSWORD: sLREJwmUUeptAeiTLgMnZxyaIbHpsYhU
+      MYSQL_DATABASE: railway
+      MYSQL_USER: root
+      MYSQL_PASSWORD: sLREJwmUUeptAeiTLgMnZxyaIbHpsYhU
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: sLREJwmUUeptAeiTLgMnZxyaIbHpsYhU
+
+volumes:
+  dbdata:
